@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 class pizza_choice(models.Model):
+    name = models.CharField(max_length = 130,blank = True)
     # adding pizza shape.
     choose_shape_pizza = (('regular',"Regular"),
                 ('square',"square"))
