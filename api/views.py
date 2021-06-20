@@ -1,50 +1,63 @@
 from django.shortcuts import render, redirect
 from api.models import pizza_choice  # importing models from model file
-from django.contrib import messages  # importing messages
-from rest_framework.views import APIView
-from rest_framework.response import Response
+
 from .seializer import  pizza_choiceSerializer ,pizza_choice1Serializer# import pizza_choice form seializer file.
-from rest_framework import generics # import generic from django rest_framework
+from rest_framework.parsers import JSONParser
+from rest_framework import viewsets
+from django.http import HttpResponse,JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 # creating views for the pizza form.
-class pizza_choiceList(APIView):
-    def get(self,request):
-        pizza_choice1 = pizza_choice.objects.all()
-        serializer = pizza_choiceSerializer(pizza_choice1, many=True)
-        return Response(serializer.data)
-# creating API of pizza toppings and pizza size
-class pizza_choice1List(APIView):
-    def get(self,request):
-        pizza_choice2 = pizza_choice.objects.all()
-        serializer1 = pizza_choice1Serializer(pizza_choice2, many=True)
-        return Response(serializer1.data)
-# creating api to add data
-class pizza_choice_addList(generics.ListCreateAPIView):
-    queryset = pizza_choice.objects.all()
-    serializer_class = pizza_choice1Serializer
+@csrf_exempt
+def pizza_regular_square(request):
+    if request.method == "GET": # get request to fetch the data only regular or square
+        pizza_api_regular_square = pizza_choice.objects.all()
+        serializer = pizza_choiceSerializer(pizza_api_regular_square, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST': # post request to post the data regular or square
+        data = JSONParser().parse(request)
+        serializer = pizza_choiceSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)#
+@csrf_exempt
+def pizza_api(request): # craeting api for the all feilds
+    if request.method == "GET": # get request to fetch all the data
 
-# creating edit and delete finction in the API here edit name is put.
-class pizza_choiceDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset = pizza_choice
-    serializer_class = pizza_choice1Serializer
+        pizza_api_get = pizza_choice.objects.filter()
+        serializer = pizza_choice1Serializer(pizza_api_get, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST': # post  request post the data
+        data = JSONParser().parse(request)
+        serializer = pizza_choice1Serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)# when wrong data is send server return 400 insead of 500
 
-# Save the form data to database.
-"""
-def pizza_form(request):
-    if request.method == "POST":
-        name = request.POST['name']
-        phone = request.POST['phone']
-        choose_pizza = request.POST['choose_pizza']
-        pizza_size = request.POST['pizza_size']
-        toppings = request.POST['toppings']
-        if len(phone) != 10:
-            messages.warning(request, "Entre correct phone  number")
-            return redirect('pizza_form')
-        # The data should be saved in database
-        pizza_save = pizza_choice(name=name, phone=phone, choose_pizza=choose_pizza, pizza_size=pizza_size, toppings=toppings)
-        pizza_save.save()
-        messages.success(request, "your account has been create succesfully")
-        return redirect('pizza_choice1/')
-    return render(request, 'pizza_form.html')
-"""
+
+@csrf_exempt
+def pizza_detail(request, pk):
+    try:
+        pizza_choice_id = pizza_choice.objects.get(pk=pk)
+    except pizza_choice_id.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET': # get request to fetch all the data according to the id
+        serializer = pizza_choice1Serializer(pizza_choice_id)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT': # put request to updat the partical data
+        data = JSONParser().parse(request)
+        serializer = pizza_choice1Serializer(pizza_choice_id, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE': # delete request to delete accoriding to id.
+        pizza_choice_id.delete()
+        return HttpResponse(status=204)

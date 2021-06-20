@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from api.views import pizza_choice1List,pizza_choiceDetails,pizza_choiceList,pizza_choice_addList
+#from api.views import pizza_choice1List,pizza_choiceDetails,pizza_choiceList,pizza_choice_addList
+from api import views
 
 # changing names of the admin pannel.
 admin.site.site_header = "c3"
@@ -23,8 +24,8 @@ admin.site.site_tile = "c3"
 admin.site.index_title = "welcome to c3"
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('pizza_choice/', pizza_choiceList.as_view()), # this urls redirect to see pizza type
-    path('pizza_choice1/', pizza_choice1List.as_view()), # this urls redirect to see pizza size toppings etc.
-    path('',pizza_choice_addList.as_view()), # this urls can use by the user to order a pizza ## we can also add pizza_choice_add/ this urls
-    path('api/pizza/<int:pk>',pizza_choiceDetails.as_view()) # this url redirect to edit and functions.
+    path('pizza_choice/create/',views.pizza_api), # get and post request from this same url and fectch all apis.
+    path('pizza_choice/<int:pk>/',views.pizza_detail),# get,put,delete, from this same url.
+    path('pizza_regular/',views.pizza_regular_square), # get request from this url geeting regular and square
+    #path('pizza_filter/',views.pizza_filtering)
 ]

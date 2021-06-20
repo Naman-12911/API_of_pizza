@@ -6,12 +6,12 @@ class pizza_choice(models.Model):
     # adding pizza shape.
     choose_shape_pizza = (('regular',"Regular"),
                 ('square',"square"))
-    choose_shape_pizzas = models.CharField(max_length = 100,default = "small",choices = choose_shape_pizza)
+    choose_shape_pizzas = models.CharField(max_length=100, default="small",choices = choose_shape_pizza)
     # adding size of pizzas
     small = models.BooleanField("small, _pizza", default=False)
     medium = models.BooleanField("Medium_pizza", default=False)
     large = models.BooleanField("Large_pizza", default=False)
-    pizza_size = models.CharField(max_length=100,blank = True) 
+    pizza_size = models.CharField(max_length=100,blank=True)
 
     # add toppings 
     onion = models.BooleanField("Onion_toppings", default=False)
