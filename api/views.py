@@ -26,7 +26,7 @@ def pizza_regular_square(request):
 def pizza_api(request): # craeting api for the all feilds
     if request.method == "GET": # get request to fetch all the data
 
-        pizza_api_get = pizza_choice.objects.filter()
+        pizza_api_get = pizza_choice.objects.all()
         serializer = pizza_choice1Serializer(pizza_api_get, many=True)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST': # post  request post the data
